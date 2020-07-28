@@ -1,9 +1,10 @@
 extends layout.pug
 
 block content
-  h2= prompt
-  form(action='/hello', method='post')
-    label Please enter your name here:
-      input(type='text', name='username')
-    button(type='submit') Submit
+  section#content
+    h2 Welcome, Student!
+    form(action='/hello', method='post')
+      label Please enter your name here:
+        input(type='text', name='username')
+      button(type='submit') Submit
     
