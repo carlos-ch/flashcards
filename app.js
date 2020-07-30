@@ -3,65 +3,61 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 
+/**
+ * next 2 lines instead of body-parser
+ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
-
-const countries = [
-  "Portugal",
-  "Spain",
-  "Indonesia",
-  "Finland",
-  "Argentina"
-];
-
-const languages = [
-  "portuguese",
-  "spanish",
-  "indonesian",
-  "finnish",
-  "spanish"
-];
 
 
 app.set('view engine', 'pug');
 
-app.get('/', (req, res) => {
-  const name = req.cookies.username;
-  if (name) {
-    res.render('index',{name})
-  } else {
-    res.redirect('/hello')
-  }
+
+
+
+/**
+ * Error test
+
+ app.use((req, res, next) => {
+   req.messagy = "This is a message";
+   console.log("Hello");
+   const err = new Error("Oh, no!!!");
+   err.status = 500;
+   next(err);
+ });
+
+ app.use((req, res, next) => {
+   console.log(req.messagy);
+   console.log("World");
+   next();
+ });
+
+ */
+
+
+const mainRoutes = require('./routes');
+const cardRoutes = require('./routes/cards');
+
+
+app.use(mainRoutes);
+app.use('/cards', cardRoutes)
+
+
+
+app.use((req, res, next) => {
+  const err = new Error('Not found');
+  err.status = 404;
+  next(err);
 });
 
-app.get('/cards', (req, res) => {
-  res.render('card', {prompt: "Who is buried in Grant's Tomb?", hint: "Think about whose tomb it is."})
+app.use((err, req, res, next) => {
+  res.locals.error = err;
+  res.status(err.status);
+  res.render('error');
 });
 
-app.get('/hello', (req, res) => {
-  const name = req.cookies.username;
-  if (!name) {
-    res.render('hello')
-  } else {
-    res.redirect('/')
-  }
-});
-
-app.post('/hello', (req, res) => {
-
-  res.cookie('username', req.body.username)
-  res.redirect('/');
-});
-
-app.post('/goodbye', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/hello')
-})
-
-app.get('/sandbox', (req, res) => {
-  res.render('countries', { title: "Languages spoken in countries", countries, languages })
-});
 
 app.listen(3000, () => {
   console.log('This site is running on localhost:3000');
