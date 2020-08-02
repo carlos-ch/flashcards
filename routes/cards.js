@@ -13,8 +13,10 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const { side } = req.query;
   const { id } = req.params; //randomId
+  // in case side is other than 'question' or 'answer'
+  const validQuery = side === 'question' || side === 'answer';
 
-  if ( !side ) {
+  if ( !validQuery ) {
     return res.redirect(`/cards/${id}?side=question`);
   }
 
@@ -22,18 +24,14 @@ router.get('/:id', (req, res) => {
   const text = cards[id][side];
   const { hint } = cards[id];
 
-  const templateData = { id, text, name };
+  const templateData = { id, text, name, side };
 
   if (side === 'question') {
     templateData.flip = 'answer';
-    templateData.backto = 'Answer';
     templateData.hint = hint;
   } else if (side === 'answer') {
     templateData.flip = 'question';
-    templateData.backto = 'Question';
   };
-
-
   res.render('card', templateData);
 });
 

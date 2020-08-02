@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
-
+app.use('/static', express.static('public'))
 
 app.set('view engine', 'pug');
 
@@ -43,6 +43,7 @@ const cardRoutes = require('./routes/cards');
 
 app.use(mainRoutes);
 app.use('/cards', cardRoutes)
+
 
 
 
